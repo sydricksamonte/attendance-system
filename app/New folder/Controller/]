@@ -1,0 +1,86 @@
+<?php
+class EmpSchedsController extends AppController{
+      public $uses = array(
+        'Schedule',
+        'Shift',
+        'Employee',
+        'Groups',
+        'EmpSched',
+				'Rule'
+      );
+public function index(){
+    $actives = $this->Emp_Sched->fetchEmployeeData('1');
+    debug($actives);
+
+$a=$this->Emp_Sched->query('SELECT COUNT(sched_id) FROM emp_scheds where sched_id=1');
+debug($a);
+
+}
+
+	function nxtweek(){
+
+$empid1=0;
+$empid2=0;
+
+$e=1;
+while ($e<=3){
+if($e==1){
+	$rule='EmpSched.sched_id >=97  and EmpSched.sched_id=105 or EmpSched.sched_id=29 or EmpSched.sched_id=30 or EmpSched.sched_id=40 or EmpSched.sched_id =41 or EmpSched.sched_id=31 or EmpSched.sched_id=8';
+}else if($e==2){
+	$rule='EmpSched.emp_id!='.$empid1.' or EmpSched.sched_id >=97  and EmpSched.sched_id=105 or EmpSched.sched_id=29 or EmpSched.sched_id=30 or EmpSched.sched_id=40 or EmpSched.sched_id =41 or EmpSched.sched_id=31 or EmpSched.sched_id=8';
+}else if($e==3){
+$rule='EmpSched.sched_id=38 or EmpSched.sched_id=39 or EmpSched.sched_id>=41 and EmpSched.sched_id<=44 or EmpSched.sched_id>=24 and EmpSched.sched_id<=29';
+}	$wks=$this->EmpSched->find('all',array(
+      'fields' => array(
+        'Employee.id',
+        'Employee.first_name',
+        'Employee.last_name',
+        'Employee.subgroup_id',
+        'Schedule.time_in',
+        'Schedule.time_out',
+        'Schedule.days',
+      ),
+      'joins' => array(
+        array(
+          'type' => 'inner',
+          'table' => 'schedules',
+          'alias' => 'Schedule',
+          'conditions' => array(
+          'EmpSched.sched_id = Schedule.id'
+          )
+        ),
+         array(
+          'type' => 'inner',
+          'table' => 'employees',
+          'alias' => 'Employee',
+          'conditions' => array(
+            'EmpSched.emp_id = Employee.id'
+          )
+        )
+      ),
+          'conditions' => array($rule,'EmpSched.week_id=14')
+		));
+		
+		$this->set(compact('wks'));
+
+	foreach ($wks as $tempwk):
+	$temp1=$tempwk['Employee']['id'];
+	endforeach;
+echo($e);
+debug($temp1);
+
+if($e==1){
+	$empid1=$temp1;
+}
+else if($e==2){
+	$empid2=$temp1;
+}
+
+$e++;
+	}
+}
+
+
+
+}
+?>

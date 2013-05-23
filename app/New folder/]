@@ -1,0 +1,86 @@
+<?php
+class LoansController extends AppController {
+  public $components=array('Session','RequestHandler');
+
+  var $sTime;
+  var $eTime;
+
+  public $uses = array(
+    'Employee',
+    'History',
+    'Shift',
+    'Groups',
+    'Schedule',
+    'Scheduleoverride',
+    'Scheduleoverride_type',
+    'Historytype',
+    'User',
+    'Checkinout',
+    'Holiday',
+    'Restday',
+    'EmpSched',
+    'SubGroup',
+    'Week',
+    'Govdeduction',
+    'Govstat',
+    'Total',
+    'Cutoff',
+    'Retro',
+		'Loan'
+  );
+
+	public function emp_loan() {
+            $ressult=$this->data;
+            $this->set(compact('ressult'));
+            $res=$this->Employee->find('all',array(
+                                    'fields'=>array(
+                                            'Employee.id',
+                                            'Employee.first_name',
+                                            'Employee.last_name',
+                                            'Employee.employed',
+                                            'SubGroup.name'
+                                            ),
+                                    'joins'=>array(array(
+                                                    'type' => 'left',
+                                                    'table' => 'sub_groups',
+                                                    'alias' => 'SubGroup',
+                                                    'conditions' => array(
+                                                            'Employee.subgroup_id = SubGroup.id'
+                                                            ))
+                                            ),
+                                    'conditions' => array(
+                                            array('OR' => array(
+                                                            'OR' =>array(
+                                                                    array('Employee.last_name LIKE' => '%'.$ressult['Loan']['emp_id'].'%'),
+                                                                    array('Employee.first_name LIKE' => '%'.$ressult['Loan']['emp_id'].'%'),
+                                                                    array('Employee.id LIKE' => '%'.$ressult['Loan']['emp_id'].'%'),
+                                                                    array('SubGroup.name LIKE' => '%'.$ressult['Loan']['emp_id'].'%')
+                                                                    )))),
+                                    'order' => array(
+                                              'Employee.employed' => 'DESC',
+                                            'SubGroup.name' => 'ASC',   'Employee.last_name' => 'ASC'
+                                                    )
+                                            ));
+
+            $this->set(compact('res'));
+
+	}
+	public function add_loan($id=null) {
+          $employee=$this->Employee->find('first',array('conditions'=>array('Employee.id'=>$id)));
+          $this->set(compact('employee'));
+
+                  if ($this->request->is('post')) {
+                          $this->Loan->create();
+                          $this->Loan->set('emp_id',$id);
+                          $this->Loan->set('sssLoan',$this->data['Loan']['SSS Loan']);
+                          $this->Loan->set('hmdfLoan',$this->data['Loan']['HMDF Loan']);
+                          if ($this->Loan->save($this->request->data)) {
+                                  $this->Session->setFlash('Employee\'s Loan pay has been saved.');
+                          } else {
+                                  $this->Session->setFlash('Unable to Save.');
+                          }
+                  }
+
+
+	}
+}

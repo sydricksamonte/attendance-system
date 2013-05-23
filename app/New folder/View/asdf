@@ -1,0 +1,85 @@
+Employees PAYSLIP
+<br>
+<?php
+echo 'From: '.$cuts['Cutoff']['start_date'].'<br>To: '.$cuts['Cutoff']['end_date'];
+?>
+<div align="right">
+</div>
+<table>
+<tr><td>
+<table border=1>
+<tr>
+	<td>Name</td>
+	<td><?php echo $employee['Employee']['last_name'].', '.$employee['Employee']['first_name']?></td>
+</tr>
+<tr>
+	<td>Position</td>
+	<td><?php echo $empRet['Group']['name']?></td>
+</tr>
+<tr>
+	<td>Tax Code</td>
+	<td></td>
+</tr>
+<tr>
+	<td colspan=2><center> Salary Details</td>
+</tr>
+<tr>
+	<td>Basic Salary</td><td><?php echo $employee['Employee']['monthly']?></td>
+</tr>
+<tr>
+	<td>Night Differential</td><td><?php echo $total['Total']['night_diff']?></td>
+</tr>
+<tr>
+	<td>Over Time</td><td><?php echo $total['Total']['OT']?></td>
+</tr>
+<tr>
+	<td>Attendance Bonus</td><td>0</td>
+</tr>
+<tr>
+	<td>Holiday Pay</td><td><?php echo $total['Total']['holiday']?></td>
+</tr>
+</table>
+</td><td>
+<table border=1>
+<tr>
+	<td>Deduction</td><td><?php echo $total['Total']['deductions']?></td>
+</tr>
+<tr>
+	<td>Absences / Tardiness</td><td><?php
+$tard1= $total['Total']['absents'];
+$tard2= $total['Total']['lates'];
+echo $tard1 + $tard2;
+?></td>
+</tr>
+<tr>
+	<td>Company Advances</td><td>0</td>
+</tr>
+<tr>
+	<td>SSS</td><td>0</td>
+</tr>
+<tr>
+	<td>PhilHealth</td><td>0</td>
+</tr>
+<tr>
+	<td>Home Mutual Dev't Fund</td><td>0</td>
+</tr>
+<tr>
+	<td>Witholding Tax</td><td>0</td>
+</tr>
+<tr>
+	<td>SSS Loan</td><td>0</td>
+</tr>
+<tr>
+	<td>HMDF (Pagibig) Load</td><td>0</td>
+</tr>
+<tr>
+  <td>Retro Pay</td><td><?php echo $retroPay['Retro']['retropay']?></td>
+</tr>
+</table>
+</td></tr>
+<tr>
+<td></td><td>Net Pay: <?php echo (($total['Total']['net_pay'])+($retroPay['Retro']['retropay']))?><td>
+</tr>
+</table>
+</center>
+
