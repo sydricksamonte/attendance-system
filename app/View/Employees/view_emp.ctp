@@ -1,8 +1,11 @@
-f<?php
+<?php
+$userid=$employee['Employee']['id'];
+
+?>
+<?php
 $yesLeave=0;
 $ssLoan=0;
 $hmdfLoan=0;
-$userid=$employee['Employee']['id'];
 $dayin=0;
 $ot = 0;
 $empAuth = $employee['Employee']['employed'];
@@ -202,27 +205,28 @@ foreach($exs as $ex2):
 												endforeach;
 								}
 
-if($couts[0]['Checkinout']['CHECKTIME']!=null){
+if($couts!=null){
 				foreach($couts as $cout):
-								$cout_start_date = date('M d, Y', strtotime($cout['Checkinout']['CHECKTIME']));
-				$cout_start_time = date('H:i:s', strtotime($cout['Checkinout']['CHECKTIME']));
+           
+								$cout_start_date = date('M d, Y', strtotime($cout));
+				$cout_start_time = date('H:i:s', strtotime($cout));
 				$cout_all[$cout_start_date] = $cout_start_time;
 				endforeach;
 }
 
-if($cout_reverses[0]['Checkinout']['CHECKTIME']!=null){
+if($cout_reverses!=null){
 				foreach($cout_reverses as $cout_reverse): 
-								$cout_reverse_start_date = date('M d, Y', strtotime($cout_reverse['Checkinout']['CHECKTIME']));
-				$cout_reverse_start_time = date('H:i:s', strtotime($cout_reverse['Checkinout']['CHECKTIME']));
+								$cout_reverse_start_date = date('M d, Y', strtotime($cout_reverse));
+				$cout_reverse_start_time = date('H:i:s', strtotime($cout_reverse));
 				$cout_reverse_all[$cout_reverse_start_date] = $cout_reverse_start_time;
 				endforeach;
 }
 $cin_start_date_coder = null;
-if($cins[0]['Checkinout']['CHECKTIME']!=null){
+if($cins!=null){
 				foreach($cins as $cin):
-								$cin_start_date = date('M d, Y', strtotime($cin['Checkinout']['CHECKTIME']));
-				$cin_start_time = date('H:i:s', strtotime($cin['Checkinout']['CHECKTIME']));
-# $cin_start_date_coder = date('Y-M-d', strtotime($cin['Checkinout']['CHECKTIME']));	
+								$cin_start_date = date('M d, Y', strtotime($cin));
+				$cin_start_time = date('H:i:s', strtotime($cin));
+# $cin_start_date_coder = date('Y-M-d', strtotime($cin));	
 				$temp[$cin_start_date."-starttime"] = $cin_start_time;
 				$temp[$cin_start_date."-endtime"] = isset($cout_all[$cin_start_date]) ? $cout_all[$cin_start_date] : null;
 				if (isset($cout_reverse_all[$cin_start_date]) && $cout_reverse_all[$cin_start_date] < $temp[$cin_start_date."-starttime"]){
@@ -695,10 +699,14 @@ $ot2c = 0;
 								$errorCount = $errorCount + 1;
 								$bg= "bgcolor = #FF9999";
 				}
-				echo "<tr> 
-								<td $bg>$trimDate </td>
-								<td $bg>";echo $trimTempStart;if(($rd != 'yes')&&($temp_start!=null or $temp_start!=0)){$dayin++;}
-				echo "</td>
+                echo "<tr>
+                <td $bg>$trimDate </td>
+                <td $bg>";echo $trimTempStart;if(($rd != 'yes')and($temp_start!=null and $temp_start!=0 and $temp_cin != '' and $temp_cout != '')){$dayin++;}
+                              if (($rd == 'yes') and ($remark == 'S Holiday' or $remark == 'R Holiday') and ($temp_cin != null and $temp_cout != null))
+                              {
+                                    $dayin++;
+                              }
+                echo "</td>
 								<td $bg>";echo $trimTempEnd;
 				echo "</td><td $bg>";
 								if($temp_cin == null and $remark=='ERROR'){
