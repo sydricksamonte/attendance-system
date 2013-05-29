@@ -1,6 +1,10 @@
 <?php
 class Checkinout extends AppModel{
-  
+    function findAccess()
+	{
+	        $dbName = $_SERVER["DOCUMENT_ROOT"] . "/aps/attBackup.mdb";	
+            return $dbName;
+	}
 	function findEmployeeLogIn($emp_id, $date)
 	{
 					$empFields = $this->find('all',array(

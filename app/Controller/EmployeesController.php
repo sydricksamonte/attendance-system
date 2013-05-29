@@ -15,6 +15,7 @@ class EmployeesController extends AppController{
 		'Scheduleoverride',
 		'Scheduleoverride_type',
 		'Historytype',
+
 		'User',
 		'Checkinout',
 		'Holiday',
@@ -312,9 +313,9 @@ class EmployeesController extends AppController{
 						$condEndDate = $this->Schedule->findExSched($reqEDate,$id,$schedId);
 
 						if (($condStartDate == true)&&($this->data['action_taken'] == $hisType)){
-										$this->Session->setFlash('Target start date exists on this employee`s schedule.');
+										$this->Session->setFlash('Target start date exists on this employees schedule.');
 						} else if (($condEndDate == true)&&($this->data['action_taken'] == $hisType)){
-										$this->Session->setFlash('Target end date exists on this employee`s schedule.');
+										$this->Session->setFlash('Target end date exists on this employees schedule.');
 						}
 						else if ($reqSDate > $reqEDate){
 										$this->Session->setFlash('Invalid date range');
@@ -515,7 +516,7 @@ class EmployeesController extends AppController{
 		
 						$this->set(compact('employee'));
 						$schedId = $this->Week->findScheduleId($sdate,$id);
-            $this->set(compact('schedId'));
+                        $this->set(compact('schedId'));
 						$startin = $this->Employee->find('first',array(
 																		'fields' => array(
 																						'Schedule.time_in',
@@ -574,26 +575,59 @@ class EmployeesController extends AppController{
 
 				      
                         $userinfo=$employee['Employee']['userinfo_id'];
-                        $dbName = $_SERVER["DOCUMENT_ROOT"] . "/aps/attBackup.mdb";
+                        $dbName = $this->Checkinout->findAccess();
                         if (!file_exists($dbName)) {
                         die("Could not find database file.");
                         }
                         $db = new PDO("odbc:DRIVER={Microsoft Access Driver (*.mdb)}; DBQ=$dbName; Uid=; Pwd=;");
                         $sql  = "SELECT CHECKTIME FROM CHECKINOUT WHERE USERID = $userinfo AND CHECKTYPE = 'O' ORDER BY CHECKTIME ASC";
                         $result = $db->query($sql);
-                        $couts = $result->fetchAll(PDO::FETCH_COLUMN);
+                        $couts1 = $result->fetchAll(PDO::FETCH_COLUMN);
+
+                        $couts2 = $this->Checkinout->find('list',array(
+																		'fields' =>
+																						'Checkinout.CHECKTIME',
+																						
+																		'conditions' => array(
+																						'Checkinout.USERID' => $employee['Employee']['userinfo_id'],
+																						'Checkinout.CHECKTYPE' => 'O',
+																						),
+																		'order' => array(
+																						'Checkinout.CHECKTIME ASC',
+																						),
+																		));
+
+						$couts = array_merge((array)$couts1, (array)$couts2);
+      
                         $this->set(compact('couts'));
-						
                         $sql  = "SELECT CHECKTIME FROM CHECKINOUT WHERE USERID = $userinfo AND CHECKTYPE = 'O' ORDER BY CHECKTIME DESC";
                         $result = $db->query($sql);
                         $cout_reverses = $result->fetchAll(PDO::FETCH_COLUMN);
+                                                                
                         $this->set(compact('cout_reverses'));
+                      
 
                         $sql  = "SELECT CHECKTIME FROM CHECKINOUT WHERE USERID = $userinfo AND CHECKTYPE = 'I' ORDER BY CHECKTIME DESC";
                         $result = $db->query($sql);
-                        $cins = $result->fetchAll(PDO::FETCH_COLUMN);
-                        $this->set(compact('cins'));
+                        $cins2 = $result->fetchAll(PDO::FETCH_COLUMN);
 
+                        $cins1 = $this->Checkinout->find('list',array(
+																		'fields' => array(
+																						'Checkinout.CHECKTIME',
+																						),
+																		'conditions' => array(
+																						'Checkinout.USERID' => $employee['Employee']['userinfo_id'],
+																						'Checkinout.CHECKTYPE' => 'I',
+																						),
+																		'order' => array(
+																						'Checkinout.CHECKTIME DESC',
+																						),
+																		));
+
+					
+                        $cins = array_merge((array)$cins1, (array)$cins2);
+                        $this->set(compact('cins'));
+                       
 						$holidays = $this->Holiday->find('all',array(
 																		'fields' => array(
 																						'Holiday.date', 'Holiday.regular'),
@@ -927,6 +961,71 @@ class EmployeesController extends AppController{
 		}
 
  public function error($id=null, $dateId) {
+           $employee = $this->Employee->find('first',array(
+                                    'fields' => array(
+                                            'Employee.id',
+                                            'Employee.userinfo_id',
+                                            'Employee.first_name',
+                                            'Employee.last_name',
+											'Employee.tax_status',                                       
+											'Employee.monthly',
+                                            'Employee.employed',
+											'Employee.account_id',                              
+											'Group.name',
+                                            'Schedule.time_in',
+                                            'Schedule.time_out',
+                                            'Schedule.id',
+                                            'EmpSched.week_id',
+                                            'EmpSched.sched_id',
+                                            'Week.week_no',
+                                            'Week.start_date',
+                                            'Week.end_date'
+                                            ),
+                                    'joins' => array(
+                                            array(
+                                                    'type' => 'left',
+                                                    'table' => 'groups',
+                                                    'alias' => 'Group',
+                                                    'conditions' => array(
+                                                            'Employee.subgroup_id = Group.id'
+                                                            )
+                                                 ),
+                                            array(
+                                                    'type' => 'left',
+                                                    'table' => 'emp_scheds',
+                                                    'alias' => 'EmpSched',
+                                                    'conditions' => array(
+                                                            'Employee.id = EmpSched.emp_id'
+                                                            )
+                                                 ),
+                                            array(
+                                                  'type' => 'left',
+                                                    'table' => 'weeks',
+                                                    'alias' => 'Week',
+                                                    'conditions' => array(
+                                                            'Week.week_no=EmpSched.week_id'
+                                                            )
+                                                 ),
+                                            array(
+                                                            'type' => 'left',
+                                                            'table' => 'schedules',
+                                                            'alias' => 'Schedule',
+                                                            'conditions' => array(
+                                                                    'EmpSched.sched_id=Schedule.order_schedules'
+                                                                    )
+                                                 )
+                                                    ),
+                                            'conditions' => array(
+                                                            'Employee.id' => $id
+                                                            ),
+                                            'order' => array(
+                                                            'EmpSched.week_id DESC'
+                                                            )
+                                                    ));
+
+          $this->set(compact('employee'));
+          $userinfo = $employee['Employee']['userinfo_id'];
+
           $curr_date_ymd = date('Y-m-d', $dateId);
           $this->set('curr_date_ymd', $curr_date_ymd);
           $this->Employee->id = $id;
@@ -935,31 +1034,82 @@ class EmployeesController extends AppController{
           $this->set(compact('employee'));
           $checkTime = $this->Checkinout->findEmployeeLogIn($id, $curr_date_ymd);
           $checkTimeOut = $this->Checkinout->findEmployeeLogOut($id, $curr_date_ymd);
+
+          $dateAccessFormat = date("n/j/Y", strtotime($curr_date_ymd));
+          $dbName = $this->Checkinout->findAccess();
+          if (!file_exists($dbName)) {
+               die("Could not find database file.");
+          }
+          $db = new PDO("odbc:DRIVER={Microsoft Access Driver (*.mdb)}; DBQ=$dbName; Uid=; Pwd=;");
+          $sql  = "SELECT CHECKTIME, CHECKTYPE FROM CHECKINOUT WHERE  USERID =".$userinfo." AND CHECKTIME LIKE "."'$dateAccessFormat%'"." ORDER BY CHECKTIME ASC ";
+          $result = $db->query($sql);
+          $schedFound = $result->fetchAll();
+          debug($schedFound[0]['CHECKTIME']);
           if ($checkTime != null)
           {
-                  $checkIn = $checkTime[0]['Checkinout']['CHECKTIME'];
+                  $checkIn = $checkTime[0]['Checkinout']['CHECKTIME'];      
           }
           else
           {
-                  $checkIn = null;
+                  $dateAccessFormat = date("n/j/Y", strtotime($curr_date_ymd));
+                  $dbName = $this->Checkinout->findAccess();
+                  if (!file_exists($dbName)) {
+                    die("Could not find database file.");
+                  }
+                  $db = new PDO("odbc:DRIVER={Microsoft Access Driver (*.mdb)}; DBQ=$dbName; Uid=; Pwd=;");
+                  $sql  = "SELECT TOP 1 CHECKTIME FROM CHECKINOUT WHERE CHECKTYPE = 'I' AND USERID =".$userinfo." AND CHECKTIME LIKE "."'$dateAccessFormat%'"." ORDER BY CHECKTIME ASC ";
+                  $result = $db->query($sql);
+                  $checkIn = $result->fetchAll(PDO::FETCH_COLUMN);
+                 
+                    if ($checkIn == NULL)
+                    {
+                      $checkIn = NULL;
+                    }
+                    else
+                    {
+                        $checkIn = $checkIn[0];
+                    }
+
           }
           if ($checkTimeOut != null)
           {
-                  $checkOut = $checkTimeOut[0]['Checkinout']['CHECKTIME'];
+                  $checkOut = $checkTimeOut[0]['Checkinout']['CHECKTIME'];  
           }
           else
           {
-                  $checkOut = null;
+                  $dateAccessFormat = date("n/j/Y", strtotime($curr_date_ymd));
+                  $dbName = $this->Checkinout->findAccess();
+                  if (!file_exists($dbName)) {
+                    die("Could not find database file.");
+                  }
+                  $db = new PDO("odbc:DRIVER={Microsoft Access Driver (*.mdb)}; DBQ=$dbName; Uid=; Pwd=;");
+                  $sql  = "SELECT TOP 1 CHECKTIME FROM CHECKINOUT WHERE CHECKTYPE = 'O' AND USERID =".$userinfo." AND CHECKTIME LIKE "."'$dateAccessFormat%'"." ORDER BY CHECKTIME ASC ";
+                  $result = $db->query($sql);
+                  $checkOut = $result->fetchAll(PDO::FETCH_COLUMN);
+                  
+                 
+                    if ($checkOut == NULL)
+                    {
+                      $checkOut = NULL;
+                    }
+                    else
+                    {
+                        $checkOut = $checkOut[0];
+                    }
           }
+
            $this->set(compact('checkIn'));
            $this->set(compact('checkOut'));
-   if (!empty($this->data)){
+           $this->set(compact('schedFound'));
+            if (!empty($this->data)){
                    if($this->Checkinout->save($this->data))
                    {
+                       
                            $this->Session->setFlash('Log Entry Saved!');
                            $this->request->data['Checkinout']['USERID'] = $employee['Employee']['userinfo_id'];
                            $this->request->data['Checkinout']['CHECKTIME'] = $this->data['Checkinout']['CHECKTIME2'];
                            $this->request->data['Checkinout']['CHECKTYPE'] = 'O';
+                           $this->request->data['Checkinout']['id'] = NULL;
                            $this->Checkinout->save($this->request->data);
                            $this->Session->setFlash('Log Entry Saved!');
                            $this->redirect(array('action' => 'view_emp', $id));
