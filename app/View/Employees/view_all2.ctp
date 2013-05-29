@@ -131,27 +131,27 @@ if($histor[0]['Week']['start_date']!=null){
   endforeach;
 }
 
-if($couts[0]['Checkinout']['CHECKTIME']!=null){
+if($couts!=null){
   foreach($couts as $cout):
-    $cout_start_date = date('M d, Y', strtotime($cout['Checkinout']['CHECKTIME']));
-    $cout_start_time = date('H:i:s', strtotime($cout['Checkinout']['CHECKTIME']));
+    $cout_start_date = date('M d, Y', strtotime($cout));
+    $cout_start_time = date('H:i:s', strtotime($cout));
     $cout_all[$cout_start_date] = $cout_start_time;
   endforeach;
 }
 
-if($cout_reverses[0]['Checkinout']['CHECKTIME']!=null){
+if($cout_reverses!=null){
   foreach($cout_reverses as $cout_reverse): 
-    $cout_reverse_start_date = date('M d, Y', strtotime($cout_reverse['Checkinout']['CHECKTIME']));
-    $cout_reverse_start_time = date('H:i:s', strtotime($cout_reverse['Checkinout']['CHECKTIME']));
+    $cout_reverse_start_date = date('M d, Y', strtotime($cout_reverse));
+    $cout_reverse_start_time = date('H:i:s', strtotime($cout_reverse));
     $cout_reverse_all[$cout_reverse_start_date] = $cout_reverse_start_time;
   endforeach;
 }
  $cin_start_date_coder = null;
-if($cins[0]['Checkinout']['CHECKTIME']!=null){
+if($cins!=null){
 	foreach($cins as $cin):
-		$cin_start_date = date('M d, Y', strtotime($cin['Checkinout']['CHECKTIME']));
-		$cin_start_time = date('H:i:s', strtotime($cin['Checkinout']['CHECKTIME']));
-# $cin_start_date_coder = date('Y-M-d', strtotime($cin['Checkinout']['CHECKTIME']));	
+		$cin_start_date = date('M d, Y', strtotime($cin));
+		$cin_start_time = date('H:i:s', strtotime($cin));
+# $cin_start_date_coder = date('Y-M-d', strtotime($cin));	
 	$temp[$cin_start_date."-starttime"] = $cin_start_time;
 		$temp[$cin_start_date."-endtime"] = isset($cout_all[$cin_start_date]) ? $cout_all[$cin_start_date] : null;
 		if (isset($cout_reverse_all[$cin_start_date]) && $cout_reverse_all[$cin_start_date] < $temp[$cin_start_date."-starttime"]){
@@ -699,16 +699,13 @@ if(($late_total==0)&&($absent_total==0)&&($halfDayCount==0)&&($under_total==0)&&
               }
   $net_pay = ($basic / 2) + $otamount + $ndamount + $hdamount - ($deduction_amount + $gov_deductions) + $attbonus - ($hmdfLoan + $ssLoan);
 $all_deduction = $deduction_amount + $gov_deductions;
-echo $net_pay;
-if ($net_pay <= 0)
-{$errorCount= $errorCount+1;
-}
-
 ?>
 
 <?php
 $employeeID = $employee['Employee']['id']; 
 $basic = Security::cipher($basic, 'my_key'); 
 $net = Security::cipher($net_pay, 'my_key');
-$this->requestAction('Totals/saveInfo/'.$dateId . '/' .$employeeID.'/'.$basic.'/'.$account_id.'/'.$absent_total.'/'.$late_total.'/'.$all_deduction .'/'. $attbonus .'/'. $sss .'/'. $philhealth .'/'. $pagibig  .'/'. $tax .'/'. $otamount .'/'. $ndamount .'/'. $hdamount .'/'. $net.'/'. $errorCount.'/'.$ssLoan. '/'.$hmdfLoan .'/'  );
+
+$this->requestAction('Totals/saveInfo/'.$dateId . '/' .$employeeID.'/'.$basic.'/'.$account_id.'/'.$absent_total.'/'.$late_total.'/'.$all_deduction .'/'. $attbonus .'/'. $sss .'/'. $philhealth .'/'. $pagibig  .'/'. $tax .'/'. $otamount .'/'. $ndamount .'/'. $hdamount .'/'. $net_pay.'/'. $errorCount.'/'.$ssLoan. '/'.$hmdfLoan .'/'  );
+
 ?>

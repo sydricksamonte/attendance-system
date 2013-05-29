@@ -27,7 +27,7 @@ class TotalsController extends AppController{
 
 		function saveInfo($date,$id,$basic,$account_id,$absent,$late,$deduc,$att, $sss, $ph, $pag,$tax, $ot,$nd,$hd,$net,$error,$hmdf,$sssL )
 		{
-
+           
 						if ($this->Total->findCutOff($date, $id) == null){
 										$Total['id'] = null; 
 						}
@@ -36,6 +36,10 @@ class TotalsController extends AppController{
 										$existEmp = $this->Total->findCutOff($date, $id);
 										$Total['id'] = $existEmp;
 						}
+                        if ($net < 1)
+                            {$error= $error+1;
+                            }
+                            echo $net;
 						$Total['cutoff_id'] = $date;	 
 						$Total['emp_id'] = $id;
 						$Total['monthly'] = $basic;
@@ -54,8 +58,9 @@ class TotalsController extends AppController{
 						$Total['net_pay'] = $net;
 						$Total['error'] = $error;
 						$Total['hmdf_loan'] = $hmdf;
-            $Total['sss_loan'] = $sssL;
+                        $Total['sss_loan'] = $sssL;
 						$this->Total->save($Total);	
+                        
 		}
 		function payslip($cutoff_id){
 						$this->layout='view_all';
@@ -146,7 +151,7 @@ class TotalsController extends AppController{
 		public function index($id)
 		{
 						$this->layout='payslip';
-						$total = $this->Total->fetchEmployeesOfCutOff($id);
+						$total = $this->Total->fetchEmployeesOfCutOff(10);
 						$this->set(compact('total'));
 		}
 

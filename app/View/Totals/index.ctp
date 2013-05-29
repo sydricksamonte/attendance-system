@@ -64,6 +64,7 @@ return number_format($amount, 2, '.', '');
 </tr>
       <?php foreach ($total as $t): ?>
 <tr>
+
 <?php if ($t['Total']['error'] > 0){ $bg = "style='background-color:rgb(255, 153, 153);'";}else { $bg = ''; } ?>
 				<?php $decBasic = Security::cipher($t['Total']['monthly'], 'my_key');?>
 
@@ -76,8 +77,8 @@ return number_format($amount, 2, '.', '');
         <?php echo "<td $bg width=150>". formatAmount(($decBasic / 22) / 8)."</td>" ?>
         <?php echo "<td $bg width=150>". formatAmount((($decBasic / 22) / 8) / 60)."</td>" ?>
 				
-<?php echo "<td $bg width=100>". formatAmount($t['Total']['absents'])."</td>" ?>
-				<?php echo "<td $bg width=100>". formatAmount($t['Total']['lates'])."</td>" ?>
+<?php echo "<td $bg width=100>". $t['Total']['absents']."</td>" ?>
+				<?php echo "<td $bg width=100>". $t['Total']['lates']."</td>" ?>
         <?php echo "<td $bg width=100>".  formatAmount($t['Total']['deductions'])."</td>" ?>
 
 				<?php echo "<td $bg width=100>". formatAmount($t['Total']['att_bonus'])."</td>" ?>
@@ -92,7 +93,7 @@ return number_format($amount, 2, '.', '');
 				<?php echo "<td $bg width=100>". formatAmount($t['Total']['holiday'])."</td>" ?>
 				<?php echo "<td $bg width=100>". formatAmount($t['Total']['sss_loan'])."</td>" ?>
 				<?php echo "<td $bg width=100>". formatAmount($t['Total']['hmdf_loan'])."</td>" ?>
-				<?php echo "<td $bg width=200>". formatAmount(Security::cipher($t['Total']['net_pay'],'my_key'))."</td>" ?>
+				<?php echo "<td $bg width=200>". formatAmount($t['Total']['net_pay'])."</td>" ?>
 				</tr>
       <?php endforeach; ?>
     </tbody></table></div>

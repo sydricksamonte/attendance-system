@@ -347,10 +347,6 @@ class EmployeesController extends AppController{
 		}
 
 		public function view_emp($id=null){
-
-
-
-
 						$sdate = date("Y-m-d", time());
 						$total = $this->Cutoff->getCutOffAvailable($sdate);
 						$this->set(compact('total'));
@@ -572,8 +568,6 @@ class EmployeesController extends AppController{
 
 						$this->set(compact('startin'));
 
-
-				      
                         $userinfo=$employee['Employee']['userinfo_id'];
                         $dbName = $this->Checkinout->findAccess();
                         if (!file_exists($dbName)) {
@@ -1370,49 +1364,59 @@ class EmployeesController extends AppController{
 
             $this->set(compact('startin'));
 
+             $userinfo=$employee['Employee']['userinfo_id'];
+                        $dbName = $this->Checkinout->findAccess();
+                        if (!file_exists($dbName)) {
+                        die("Could not find database file.");
+                        }
+                        $db = new PDO("odbc:DRIVER={Microsoft Access Driver (*.mdb)}; DBQ=$dbName; Uid=; Pwd=;");
+                        $sql  = "SELECT CHECKTIME FROM CHECKINOUT WHERE USERID = $userinfo AND CHECKTYPE = 'O' ORDER BY CHECKTIME ASC";
+                        $result = $db->query($sql);
+                        $couts1 = $result->fetchAll(PDO::FETCH_COLUMN);
 
-            $cins = $this->Checkinout->find('all',array(
-                                    'fields' => array(
-                                            'Checkinout.CHECKTIME',
-                                            ),
-                                    'conditions' => array(
-                                            'Checkinout.USERID' => $employee['Employee']['userinfo_id'],
-                                            'Checkinout.CHECKTYPE' => 'I',
-                                            ),
-                                    'order' => array(
-                                            'Checkinout.CHECKTIME DESC',
-                                            ),
-                                    ));
+                        $couts2 = $this->Checkinout->find('list',array(
+																		'fields' =>
+																						'Checkinout.CHECKTIME',
+																						
+																		'conditions' => array(
+																						'Checkinout.USERID' => $employee['Employee']['userinfo_id'],
+																						'Checkinout.CHECKTYPE' => 'O',
+																						),
+																		'order' => array(
+																						'Checkinout.CHECKTIME ASC',
+																						),
+																		));
 
-            $this->set(compact('cins'));
-            $couts = $this->Checkinout->find('all',array(
-                                    'fields' => array(
-                                            'Checkinout.CHECKTIME',
-                                            ),
-                                    'conditions' => array(
-                                            'Checkinout.USERID' => $employee['Employee']['userinfo_id'],
-                                            'Checkinout.CHECKTYPE' => 'O',
-                                            ),
-                                    'order' => array(
-                                            'Checkinout.CHECKTIME ASC',
-                                            ),
-                                    ));
+						$couts = array_merge((array)$couts1, (array)$couts2);
+      
+                        $this->set(compact('couts'));
+                        $sql  = "SELECT CHECKTIME FROM CHECKINOUT WHERE USERID = $userinfo AND CHECKTYPE = 'O' ORDER BY CHECKTIME DESC";
+                        $result = $db->query($sql);
+                        $cout_reverses = $result->fetchAll(PDO::FETCH_COLUMN);
+                                                                
+                        $this->set(compact('cout_reverses'));
+                      
 
-            $this->set(compact('couts'));
-            $cout_reverses = $this->Checkinout->find('all',array(
-                                    'fields' => array(
-                                            'Checkinout.CHECKTIME',
-                                            ),
-                                   'conditions' => array(
-                                            'Checkinout.USERID' => $employee['Employee']['userinfo_id'],
-                                            'Checkinout.CHECKTYPE' => 'O',
-                                            ),
-                                    'order' => array(
-                                            'Checkinout.CHECKTIME DESC',
-                                            ),
-                                    ));
+                        $sql  = "SELECT CHECKTIME FROM CHECKINOUT WHERE USERID = $userinfo AND CHECKTYPE = 'I' ORDER BY CHECKTIME DESC";
+                        $result = $db->query($sql);
+                        $cins2 = $result->fetchAll(PDO::FETCH_COLUMN);
 
-            $this->set(compact('cout_reverses'));
+                        $cins1 = $this->Checkinout->find('list',array(
+																		'fields' => array(
+																						'Checkinout.CHECKTIME',
+																						),
+																		'conditions' => array(
+																						'Checkinout.USERID' => $employee['Employee']['userinfo_id'],
+																						'Checkinout.CHECKTYPE' => 'I',
+																						),
+																		'order' => array(
+																						'Checkinout.CHECKTIME DESC',
+																						),
+																		));
+
+					
+                        $cins = array_merge((array)$cins1, (array)$cins2);
+                        $this->set(compact('cins'));
 
             $holidays = $this->Holiday->find('all',array(
                                     'fields' => array(
