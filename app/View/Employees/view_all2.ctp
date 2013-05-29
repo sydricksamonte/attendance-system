@@ -454,7 +454,16 @@ if(substr($temp_cin, 0, -3) == substr($temp_cout, 0, -3)and $temp_cin != null){
 		}
 
 		$trimDate = substr($curr_date_myd, 0, -6);
-		if (($rd != 'yes')&&($temp_start!=null or $temp_start!=0)){ $dayin++;}
+        if(($rd != 'yes')and($temp_start!=null and $temp_start!=0 and $temp_cin != '' and $temp_cout != ''))
+             {
+                $dayin++;
+             }
+        if (($rd == 'yes') and ($remark == 'S Holiday' or $remark == 'R Holiday') and ($temp_cin != null and $temp_cout != null))
+             {
+                $dayin++;
+             }
+
+
 		$trimTempStart = substr($temp_start, 0, -3);
 		$trimTempEnd = substr($temp_end, 0, -3);
 		$trimTempCin = substr($temp_cin, 0, -3);
