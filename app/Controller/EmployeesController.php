@@ -34,10 +34,33 @@ class EmployeesController extends AppController{
 	public $helpers = array('Html','Form');
 
 
-		public function test(){
+	public function test(){
 			$all = $this->Employee->find('all');
 			$this->set(compact('all'));
-		}
+    }
+
+    public function upload(){
+        
+        
+		$file = $this->data['Upload']['file'];
+        if ($file != NULL)
+        {
+            if ($file['type'] == "application/msaccess")
+            {
+                $dbName = $_SERVER["DOCUMENT_ROOT"] ."/aps/". $file['name'];
+                $uploading = move_uploaded_file($file['tmp_name'], $dbName);
+                if($uploading){
+                    $this->Session->setFlash('Logsheet has been updated');
+                }else{
+                    $this->Session->setFlash('Failed to upload');
+                }
+            }
+            else
+            {
+                $this->Session->setFlash('Invalid file');
+            }
+        }
+	}
     public function filter(){
 						$ressult=$this->data;
 						$this->set(compact('ressult'));

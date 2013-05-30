@@ -94,6 +94,12 @@ $cakeDescription = __d('cake_dev', 'Imperium Attendance System');
         <?php echo $this->Html->link('Cutoffs', array('controller'=>'Cutoffs', 'action'=>'view'))?>
       </div>
 
+            <br>
+      		<br>
+			<div class="btn btn-primary">
+				<?php echo $this->Html->image('address-book--plus.png');?>
+				<?php echo $this->Html->link('Update Logsheet',array('controller'=>'Employees','action'=>'upload'))?>
+			</div>
 
 			<!--br>
 				<div class="btn btn-primary">
@@ -101,12 +107,12 @@ $cakeDescription = __d('cake_dev', 'Imperium Attendance System');
 				<?php# echo $this->Html->link('History',array('controller' => 'Histories','action' => 'searchall'))?>
 			</div-->
 
-			<br><!--br>
+			<!--br>
 			<div class="btn btn-primary">
 				<?php #echo $this->Html->image('calendar--plus.png');?>
 				<?php #echo $this->Html->link('Add Shift',array('controller' => 'Shifts', 'action' => 'add'))?>
 			</div-->
-		<br>
+		
       <div class="btn btn-primary">
       <?php echo $this->Html->image('user--plus.png');?>
       <?php echo $this->Html->link('Add Employee',array('controller' => 'Employees','action' => 'add_employee'))?>
