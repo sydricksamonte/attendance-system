@@ -398,13 +398,16 @@ if(substr($temp_cin, 0, -3) == substr($temp_cout, 0, -3)and $temp_cin != null){
 						$yesLeave=1;
 		}
 		else if ($remark == 'Half Day')
-    {
+        {
             $halfDayCount = $halfDayCount + 1;
-    }
-
+        }
 		else if ($remark == 'Absent')
 		{
-		  $absent_total = $absent_total + 1;
+		                $absent_total = $absent_total + 1;
+		}
+        else if ($remark == 'Excemption ER')
+		{
+						$yesLeave = 1;
 		}
 		else if ($remark == 'No pay' and $bg == "bgcolor = #CCCCCC" )
 		{
@@ -647,7 +650,7 @@ return number_format($amount, 2, '.', ',');
 <?php $ot1_amount = ((($h_rate * .25))* $ot1total);?>
 <?php $ot2_amount = ((($h_rate * .3))* $ot2total);?>
 <?php $ot3_amount =((($h_rate * .5))* $ot3total);?>
-<?php $ot4_amount =((($h_rate * .3))* $ot4total);?>
+<?php $ot4_amount =((($h_rate * 1))* $ot4total);?>
 <?php $ot5_amount = ((($h_rate * 1.6))* $ot5total);?>
 <?php $otamount = ($ot1_amount + $ot2_amount + $ot3_amount + $ot4_amount + $ot5_amount);  ?>
 <?php

@@ -493,6 +493,10 @@ debug($ot_time);/
 				{
 								$absent_total = $absent_total + 1;
 				}
+                else if ($remark == 'Excemption ER')
+				{
+								$yesLeave = 1;
+				}
 				else if ($remark == 'No pay' and $bg == "bgcolor = #CCCCCC" )
         {
 								$under_total = $under_total - $under;
@@ -859,7 +863,7 @@ function formatAmount($amount)
 <tr>
 <td>Regular holiday:</td>
 <td><?php echo $ot4total ?></td>
-<td><?php  $ot4_amount =((($h_rate * .3))* $ot4total);echo formatAmount($ot4_amount); ?></td>
+<td><?php  $ot4_amount =((($h_rate * 1))* $ot4total);echo formatAmount($ot4_amount); ?></td>
 </tr>
 <tr>
 <td>Regular holiday & restday:</td>

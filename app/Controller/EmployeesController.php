@@ -884,13 +884,13 @@ class EmployeesController extends AppController{
 						} else {
 										$this->request->data['start_date'] = $curr_date_ymd;
 										$this->request->data['end_date'] = $curr_date_ymd;
-									  $this->request->data['emp_id'] = $id;
+									    $this->request->data['emp_id'] = $id;
 										$this->request->data['create_by'] = $_SESSION['Auth']['User']['User']['id'];
 										$schedTime = $this->Scheduleoverride->findSchebyTimeAndEmp($id,$curr_date_ymd);
 										$this->set(compact('schedTime'));
 
 										$this->request->data['create_time'] = date("Y-m-d H:i:s");
-										if ($this->data['Scheduleoverride']['scheduleoverride_type_id'] == '2') {
+										if ($this->data['Scheduleoverride']['scheduleoverride_type_id'] == '8') {
 														if ($this->Scheduleoverride->save($this->data)){
 																		$over = $this->Scheduleoverride->getLastInsertID();
 																		$this->request->data['sched_id']  = null;
@@ -945,6 +945,17 @@ class EmployeesController extends AppController{
 																		$this->Session->setFlash('Schedule successfully changed.');
 														}
 										}
+                                        	else if ($this->data['Scheduleoverride']['scheduleoverride_type_id'] == '2') {
+														if ($this->Scheduleoverride->save($this->data)){
+																		$over = $this->Scheduleoverride->getLastInsertID();
+																		$this->request->data['sched_id']  = null;
+																		$this->request->data['history_type_id'] = '4';
+																		$this->request->data['id'] = null;
+																		$this->request->data['scheduleoverride_id'] = $this->Scheduleoverride->findSchebyTimeAndEmp($id,$curr_date_ymd);															
+																		$this->History->save($this->request->data);
+																		$this->Session->setFlash('Schedule successfully changed.');
+														}
+										}
 										 else if ($this->data['Scheduleoverride']['scheduleoverride_type_id'] == '6') {
                             if ($this->Scheduleoverride->save($this->data)){
                                     $over = $this->Scheduleoverride->getLastInsertID();
@@ -967,7 +978,7 @@ class EmployeesController extends AppController{
                                     $this->Session->setFlash('Schedule successfully marked as offset.');
                             }
                     }
-										else if ($this->data['Scheduleoverride']['scheduleoverride_type_id'] == '8') {
+										else if ($this->data['Scheduleoverride']['scheduleoverride_type_id'] == '9') {
 														$this->Scheduleoverride->delete($this->Scheduleoverride->findSchebyTimeAndEmp($id,$curr_date_ymd));
 														$this->Session->setFlash('Excemption successfully removed.');
                             
